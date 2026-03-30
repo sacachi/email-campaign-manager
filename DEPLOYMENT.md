@@ -231,7 +231,7 @@ docker compose up --build
 | PostgreSQL | 5433 | Persistent volume `pgdata` |
 | Redis | 6379 | BullMQ job broker |
 | Mailpit (SMTP sandbox) | 8025 (UI), 1025 (SMTP) | Catches all outbound email |
-| Backend API | 3001 | Auto-runs migrations + seeds on start |
+| Backend API | 3000 | Auto-runs migrations + seeds on start |
 | Frontend (Vite dev) | 5174 | Hot-reload via volume mount on `src/` |
 
 See `README.md` for full setup instructions.

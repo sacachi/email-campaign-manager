@@ -120,7 +120,7 @@ This will start 6 services in the correct order:
 2. **Redis** — port `6379` (job queue + SSE event bridge)
 3. **Mailpit** (email sandbox UI) — port `8025`
 4. **migrate** — one-shot container that runs DB migrations & seeds, then exits
-5. **backend** API — port `3001` (starts after migrations complete)
+5. **backend** API — port `3000` (starts after migrations complete)
 6. **worker** — BullMQ worker that processes campaign send jobs
 7. **frontend** dev server — port `5174`
 
@@ -129,7 +129,7 @@ This will start 6 services in the correct order:
 | Service | URL |
 |---|---|
 | Frontend | http://localhost:5174 |
-| Backend API | http://localhost:3001 |
+| Backend API | http://localhost:3000 |
 | Mailpit (email UI) | http://localhost:8025 |
 | Redis | localhost:6379 |
 
@@ -298,7 +298,7 @@ frontend/src/__tests__/
 | `DB_PASSWORD` | `postgres` | Database password |
 | `SMTP_HOST` | `mailpit` | SMTP host for sending emails |
 | `SMTP_PORT` | `1025` | SMTP port |
-| `BASE_URL` | `http://localhost:3001` | Public URL of the backend (used in tracking links) |
+| `BASE_URL` | `http://localhost:3000` | Public URL of the backend (used in tracking links) |
 | `FRONTEND_URL` | `http://localhost:5174` | Allowed CORS origin |
 | `REDIS_HOST` | `redis` | Redis host (BullMQ queue + SSE pub/sub) |
 | `REDIS_PORT` | `6379` | Redis port |
