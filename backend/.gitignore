@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Environment — contains DB passwords, JWT secret, SMTP credentials
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+
+# Test environment (contains test DB credentials)
+# Commit .env.test.example instead if needed
+.env.test
+
+# Logs
+logs/
+*.log
+
+# Coverage
+coverage/
+.nyc_output/
+
+# OS
+.DS_Store

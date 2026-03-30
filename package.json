@@ -1,0 +1,27 @@
+{
+  "name": "campaign-manager",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"yarn workspace backend dev\" \"yarn workspace frontend dev\"",
+    "build": "yarn workspace backend build && yarn workspace frontend build",
+    "test": "yarn workspace backend test && yarn workspace frontend test",
+    "test:unit": "yarn workspace backend test:unit && yarn workspace frontend test:unit",
+    "test:integration": "yarn workspace backend test:integration",
+    "test:coverage": "yarn workspace backend test:coverage && yarn workspace frontend test:coverage",
+    "lint": "yarn workspace backend lint && yarn workspace frontend lint",
+    "migrate": "yarn workspace backend migrate",
+    "migrate:undo": "yarn workspace backend migrate:undo",
+    "worker": "ts-node src/jobs/worker.ts",
+    "seed": "yarn workspace backend seed",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "db:setup:test": "yarn workspace backend db:create:test && yarn workspace backend db:reset:test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
