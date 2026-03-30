@@ -38,6 +38,7 @@ services:
         max-file: "2"
     volumes:
       - redisdata:/data
+
   mailpit:
     image: axllent/mailpit:latest
     ports:
@@ -66,7 +67,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npm run migrate && npm run seed || true"
+    command: sh -c "yarn migrate && yarn seed || true"
     restart: "no"
     logging:
       driver: json-file
@@ -104,9 +105,8 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./backend:/app
-      - backend_node_modules:/app/node_modules
-    command: npm run dev
+      - ./backend/src:/app/src
+    command: yarn dev
     logging:
       driver: json-file
       options:
@@ -136,10 +136,10 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
-    command: npm run worker
     volumes:
-      - ./backend:/app
-      - backend_node_modules:/app/node_modules
+      - ./backend/src:/app/src
+    command: yarn worker
+
   frontend:
     build:
       context: ./frontend
@@ -151,8 +151,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend:/app
-      - frontend_node_modules:/app/node_modules
+      - ./frontend/src:/app/src
     logging:
       driver: json-file
       options:
@@ -162,5 +161,3 @@ services:
 volumes:
   pgdata:
   redisdata:
-  backend_node_modules:
-  frontend_node_modules:

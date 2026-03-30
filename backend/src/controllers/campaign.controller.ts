@@ -293,6 +293,8 @@ export async function sendCampaign(req: Request, res: Response, next: NextFuncti
   } catch (error) {
     next(error);
   }
+}
+
 export async function duplicateCampaign(req: Request, res: Response, next: NextFunction) {
   try {
     const user = (req as any).user;
