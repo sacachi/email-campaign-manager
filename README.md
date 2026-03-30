@@ -471,3 +471,75 @@ processCampaignSend()                            startCampaignEventSubscriber()
 ```
 
 The `useCampaignSSE` hook in the frontend handles connection lifecycle, token injection, and React Query cache updates automatically.
+
+---
+
+## How I Used Claude Code
+
+This project was built entirely in **VS Code Agent mode** using **GitHub Copilot — Claude Sonnet 4.6**.
+
+The workflow had two layers:
+- **GitHub Copilot (VS Code)** — interactive planning, corrections, feature additions, and refinements
+- **[opencode](https://opencode.ai)** — terminal AI agent used for bulk boilerplate implementation across phases
+
+---
+
+### What I Delegated to GitHub Copilot
+
+| Task | Notes |
+|---|---|
+| Reading and summarizing the challenge spec (`document.md`) | Extracted schema, endpoints, business rules, and eval criteria in one pass |
+| Generating `PLAN.md` from skills + rules | Produced a 12-phase phased plan with task-level output files and verification steps |
+| Scaffolding all boilerplate | Dockerfiles, `tsconfig.json`, Sequelize models, Express routes, Zod validators |
+| Implementing phases 0–8 via opencode | Backend API, frontend pages, migrations, seeders — all driven by skill files |
+| Writing test cases | Unit tests for business rules + JWT; integration tests for API routes |
+| BullMQ queue + worker architecture | `queue.ts`, `worker.ts`, `worker-entry.ts`, `scheduler.ts`, Redis Pub/Sub bridge |
+| SSE realtime feature end-to-end | `redis-publisher.ts`, `redis-subscriber.ts`, SSE controller, `useCampaignSSE` hook |
+| Duplicate campaign endpoint + frontend hook | Full-stack: backend controller, route, frontend mutation hook |
+
+---
+
+### Real Prompts I Used
+
+**Prompt 1 — Project planning**
+> *"Read `document.md`, the skills in `skills/`, and the rules in `rules/`. Create a `PLAN.md` with phased tasks. Each task must list its output files, reference the relevant skill, and include a verification step I can check manually."*
+
+This produced the full `PLAN.md` structure with phases 0–9, which was then extended to phases 0–12 as features were added.
+
+---
+
+**Prompt 2 — BullMQ worker architecture**
+> *"The API currently uses `node-cron` to poll the DB every minute. Replace it with a proper BullMQ job queue: a `queue.ts` producer, a `worker.ts` consumer with concurrency 5 and 3-retry exponential backoff, and a `scheduler.ts` that syncs existing scheduled campaigns from the DB into BullMQ on startup. The worker must run as a separate Docker container."*
+
+This produced `queue.ts`, `worker.ts`, `worker-entry.ts`, and `scheduler.ts`, plus the `worker` service in `docker-compose.yml` and the `migrate` one-shot service for migration separation.
+
+---
+
+**Prompt 3 — SSE with cross-process event delivery**
+> *"The worker and backend are separate Docker containers, so they can't share an EventEmitter. Add a Redis Pub/Sub bridge: the worker publishes `campaign:status`, `campaign:progress`, and `campaign:complete` events to a Redis channel; the backend subscribes and re-emits them on a local EventEmitter that feeds the SSE endpoint. Frontend: a `useCampaignSSE` hook that opens an EventSource, handles all three event types, and keeps the React Query cache updated in-place for progress events (no full refetch)."*
+
+---
+
+### Where Claude Code Was Wrong or Needed Correction
+
+| Issue | Root cause | Fix |
+|---|---|---|
+| Used `autoprefixer` in `postcss.config.js` after it was removed from `package.json` | Config file not updated when the dependency was removed | Emptied the plugins object; Vite handles prefixing natively |
+| `@import 'modern-normalize'` failed in CSS | PostCSS cannot resolve bare `node_modules` specifiers | Moved to a JS `import` in `main.tsx` |
+| `<Link><Button /></Link>` anti-pattern throughout the campaign list | Habit from older React Router patterns | Replaced with `<Button onClick={() => navigate('...')} />` |
+| Campaign duplicate call used `createCampaign` mutation with `recipientIds: []`, failing the `min(1)` Zod guard | Wrong reuse of create endpoint | Added a dedicated `POST /campaigns/:id/duplicate` endpoint that copies recipients from the DB — no `recipientIds` required in the request body |
+| `useCampaignSSE` hook called inside a conditional (after an early `return`) | Rules of Hooks violation | Moved the hook call to the top of the component; computed the `active` flag from `data?.data?.status` instead |
+| Worker container crashed on startup with `npm run worker not found` | `worker` script was never added to `package.json` | Created `worker-entry.ts` as the dedicated entrypoint and added `"worker": "tsx watch src/worker-entry.ts"` to `backend/package.json` |
+| Worker EventEmitter events never reached browser SSE clients | Worker and backend are isolated OS processes — `EventEmitter` is in-process only | Replaced with Redis Pub/Sub bridge (publisher in worker, subscriber in backend) |
+
+---
+
+### What I Would Not Let GitHub Copilot Do — and Why
+
+| Task | Why human-only |
+|---|---|
+| **Final security review** | JWT secret handling, CORS origin whitelist, SQL injection surface, and timing attack vectors require deliberate review that an AI may gloss over or handle inconsistently across files |
+| **Production secrets management** | Copilot should never see `.env.production` values. Secrets injection strategy (Docker secrets, Vault, AWS Secrets Manager) requires architectural judgment tied to the deployment context |
+| **Git commit strategy** | Deciding what constitutes a coherent, reviewable commit (and what to keep out of version control) is a human judgment call — especially when the working tree contains experimental branches of code |
+| **Performance profiling decisions** | Identifying which queries need indexes, connection pool tuning, and Redis key expiry strategy requires load-test data and production metrics that the AI has no access to |
+| **Choosing the UI library** | The original plan referenced Tailwind; switching to PrimeReact + PrimeFlex was a product decision based on development speed vs. design-system flexibility trade-offs |
