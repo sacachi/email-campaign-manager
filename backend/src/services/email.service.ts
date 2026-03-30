@@ -3,12 +3,11 @@ import config from '../config';
 
 const transporter = nodemailer.createTransport({
   host: config.smtp.host,
-  port: config.smtp.port,
-  secure: config.smtp.secure,
-  ignoreTLS: !config.smtp.secure,
-  ...(config.smtp.user && config.smtp.pass
-    ? { auth: { user: config.smtp.user, pass: config.smtp.pass } }
-    : {}),
+  port: Number(config.smtp.port),
+  secure: false,
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 interface SendEmailParams {

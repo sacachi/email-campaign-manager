@@ -29,6 +29,7 @@ services:
     image: axllent/mailpit:latest
     ports:
       - "8025:8025"
+      - "1025:1025"
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
@@ -56,6 +57,7 @@ services:
       FRONTEND_URL: https://email-campaign.ment.vn
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
+      SMTP_SECURE: false
       SMTP_FROM: campaign-manager@localhost
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -80,6 +82,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SMTP_HOST: mailpit
+      SMTP_SECURE: false
       SMTP_PORT: 1025
       SMTP_FROM: campaign-manager@localhost
     depends_on:
