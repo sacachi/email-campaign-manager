@@ -5,6 +5,7 @@ const transporter = nodemailer.createTransport({
   host: config.smtp.host,
   port: Number(config.smtp.port),
   secure: false,
+  ignoreTLS: true,
   tls: {
     rejectUnauthorized: false,
   },
