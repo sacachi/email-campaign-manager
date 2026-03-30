@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -80,7 +80,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
       NODE_ENV: development
       DB_HOST: db
@@ -90,8 +90,8 @@ services:
       DB_PASSWORD: postgres
       JWT_SECRET: ${JWT_SECRET:-super-secret-dev-key-for-docker-compose}
       PORT: 3000
-      BASE_URL: http://localhost:3001
-      FRONTEND_URL: http://localhost:5174
+      BASE_URL: http://localhost:3000
+      FRONTEND_URL: http://localhost:5173
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       SMTP_FROM: campaign-manager@localhost
@@ -130,7 +130,7 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       SMTP_FROM: campaign-manager@localhost
-      BASE_URL: http://localhost:3001
+      BASE_URL: http://localhost:3000
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -145,9 +145,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5174:5173"
+      - "5173:5173"
     environment:
-      VITE_API_URL: http://localhost:3001
+      VITE_API_URL: http://localhost:3000
     depends_on:
       - backend
     volumes:
