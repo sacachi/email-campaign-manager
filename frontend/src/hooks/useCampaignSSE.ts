@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { campaignKeys } from './useCampaigns';
 import { useAuthStore } from '../store/auth.store';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 /**
  * Opens an SSE connection to GET /campaigns/:id/events and keeps
